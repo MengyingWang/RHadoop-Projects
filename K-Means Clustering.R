@@ -3,37 +3,33 @@
 kmeans.mr = function(P, num.clusters, num.iter) {
     
 	dist.fun = function(C, P) {    
-        apply(C, 1, function(x) colSums((t(P) - x)^2))  
+        	apply(C, 1, function(x) colSums((t(P) - x)^2))  
 	}    
     
 	kmeans.map = function(., P) {    
-     	if(is.null(C)) {      
-          	nearest = sample(1:num.clusters, nrow(P), replace = TRUE)    
-     	}   
-     	else {      
-          	D = dist.fun(C, P) 
-          	nearest = max.col(-D)    
-     	} 
+     		if(is.null(C)) {      
+          		nearest = sample(1:num.clusters, nrow(P), replace = TRUE)    
+     		}   
+     		else {      
+          		D = dist.fun(C, P) 
+          		nearest = max.col(-D)    
+     		} 
 		keyval(nearest, P)   
 	}
     
 	kmeans.reduce = function(., P) {    
-     	t(as.matrix(apply(P, 2, mean)))  
-     }    
+     		t(as.matrix(apply(P, 2, mean)))  
+        }    
 
  	C = NULL  
  	for(i in 1:num.iter ) {    
-     	C = values(      
-     	from.dfs(        
-          mapreduce(P, map = kmeans.map, reduce = kmeans.reduce)))  
+     		C = values(from.dfs(mapreduce(P, map = kmeans.map, reduce = kmeans.reduce)))  
  	} 
 
 	if(nrow(C) < num.clusters) {   
-		C = rbind(C, matrix(rnorm((num.clusters - nrow(C)) * nrow(C)), 
-                   ncol =  nrow(C)) %*% C) 
+		C = rbind(C, matrix(rnorm((num.clusters - nrow(C)) * nrow(C)), ncol =  nrow(C)) %*% C) 
 	}  
-	
-	C
+	return(c)
 }
 
 #Example, using data of Iris flowers
